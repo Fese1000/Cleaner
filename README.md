@@ -1,57 +1,64 @@
 # Cleaner
 
-Eine native Mac-App (SwiftUI), die dir zeigt, was auf deinem Mac Platz frisst: veraltete Dokumente, große Dateien, Duplikate, Caches, Apps und mehr – alles nach Größe sortiert und direkt aus der App löschbar. Design und Einstellungen sind an [HomebrUI](https://github.com/Fese1000/HomebrUI) angelehnt (Katalog-Look: Papier, Tinte, eckige Kanten, Monospace für Namen).
+[![Latest release](https://img.shields.io/github/v/release/Fese1000/Cleaner)](https://github.com/Fese1000/Cleaner/releases/latest)
+[![Build](https://github.com/Fese1000/Cleaner/actions/workflows/build.yml/badge.svg)](https://github.com/Fese1000/Cleaner/actions/workflows/build.yml)
+![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Alles läuft lokal. Das einzige Netzwerk ist die Update-Abfrage bei GitHub, wenn du sie auslöst.
+A native Mac app (SwiftUI) that shows what is eating your disk: outdated documents, large files, duplicates, caches, apps and more – all sorted by size and deletable right from the app. A storage manager with the catalog look of [HomebrUI](https://github.com/Fese1000/HomebrUI): paper, ink, square edges, monospace names.
+
+Everything runs locally. The only network access is the update check against GitHub when you trigger it.
+
+> Deutsche Version: [README.de.md](README.de.md)
 
 ## Download
 
-Aus dem [neuesten Release](https://github.com/Fese1000/Cleaner/releases/latest) das passende DMG laden, öffnen und Cleaner in „Programme“ ziehen:
+Get the app from the [latest release](https://github.com/Fese1000/Cleaner/releases/latest), open the DMG and drag Cleaner to Applications.
 
-- **Cleaner-AppleSilicon.dmg** für Macs mit Apple Silicon (M1 und neuer)
-- **Cleaner-Intel.dmg** für Intel-Macs
+- **Cleaner-AppleSilicon.dmg** for Macs with Apple silicon (M1 and later)
+- **Cleaner-Intel.dmg** for Intel Macs
 
-Die App ist nicht notarisiert (nur ad-hoc signiert). Beim ersten Start: Rechtsklick → Öffnen, oder ab macOS 15 unter Systemeinstellungen → Datenschutz & Sicherheit → „Trotzdem öffnen“.
+The app is not notarized (ad-hoc signed only), so macOS asks once on the first start: right-click the app and choose Open, or on macOS 15 and later go to System Settings → Privacy & Security and click "Open Anyway".
 
-## Funktionen
+## Features
 
-- **Übersicht** – Festplattenbelegung, Aufräum-Potenzial je Kategorie, Verlauf und insgesamt freigegebener Platz.
-- **Große Dateien** – alles ab einer einstellbaren Größe, nach Größe sortiert.
-- **Veraltete Dokumente** – PDF, Office, Pages, Numbers, Keynote, Text … die seit N Tagen nicht geöffnet oder geändert wurden (nutzt Spotlights „zuletzt geöffnet“).
-- **Downloads** – der Downloads-Ordner nach Größe und Alter.
-- **Duplikate** – identische Dateien (Größe → Teil-Hash → SHA-256), „Automatisch markieren“ behält die älteste Kopie; Warnung, wenn alle Kopien einer Gruppe ausgewählt sind.
-- **Caches & Logs** – App-Caches, Protokolle, Xcode (DerivedData, DeviceSupport, Archive), iOS-Backups, npm/Gradle/Cargo/Maven-Caches.
-- **Apps** – Programme nach Größe und letzter Nutzung; „Deinstallieren“ räumt Reste in `~/Library` mit auf.
-- **Explorer** – Ordner für Ordner nach Größe durchsuchen, inklusive versteckter Dateien und externer Volumes.
-- **Papierkorb** – ansehen und leeren.
-- Suche, Sortierung, Filter, Mehrfachauswahl, Quick Look, „Im Finder zeigen“, Ignorieren-Liste.
-- **Sicher löschen** – Standard ist der Papierkorb (rückholbar); „Endgültig löschen“ fragt immer nach. Wichtige Ordner (Home, Dokumente, Library-Hauptordner, Foto-Mediathek, Systempfade) sind gesperrt.
-- **Einstellungen** – Deutsch/Englisch, 12 Farbschemata (Standard, Solarized, Gruvbox, Nord, Dracula, Monokai, Tokyo Night, One Dark, Catppuccin), Schwellwerte, Scan-Ordner, Ignorierte Pfade.
-- **Updates** – Cleaner prüft auf Wunsch GitHub, lädt das passende DMG, verifiziert Prüfsumme und Code-Signatur, ersetzt sich selbst und startet neu.
+- **Overview** – disk usage, cleanup potential per category, history and the total space freed so far.
+- **Large files** – everything above an adjustable size, sorted by size.
+- **Outdated documents** – PDF, Office, Pages, Numbers, Keynote … not opened or changed for N days (uses Spotlight's "last opened").
+- **Downloads** – your Downloads folder by size and age.
+- **Duplicates** – identical files (size → partial hash → SHA-256). Hard links are not counted as copies. "Auto-select" keeps the oldest copy of each group and warns if every copy of a group is selected.
+- **Caches & logs** – app caches, logs, Xcode (DerivedData, DeviceSupport, archives), iOS backups, npm/Gradle/Cargo/Maven caches.
+- **Apps** – installed apps by size and last use; "Uninstall" also removes leftovers in `~/Library`.
+- **Explorer** – browse folder by folder, sorted by size, with hidden files and external volumes.
+- **Trash** – look at it and empty it.
+- Search, sorting, filters, multi-select, Quick Look, "Show in Finder", an ignore list.
+- **Safe deleting** – the default is the Trash (recoverable); "Delete permanently" always asks. Important folders (home, Documents, the main Library folders, photo libraries, system paths) are locked. Software folders such as `node_modules`, `venv` or `miniconda3` count as one block, not thousands of files.
+- **Settings** – German and English, 12 color schemes (default light/dark/system, Solarized, Gruvbox, Nord, Dracula, Monokai, Tokyo Night, One Dark, Catppuccin), thresholds, scanned folders, ignored paths.
+- **Updates** – on request Cleaner asks GitHub, downloads the matching DMG, verifies checksum, code signature and bundle identifier, replaces itself and restarts.
 
-## Voller Festplattenzugriff
+## Full Disk Access
 
-Für Papierkorb, Mail-Downloads und geschützte Ordner braucht Cleaner unter Systemeinstellungen → Datenschutz & Sicherheit → *Voller Festplattenzugriff* die Berechtigung. Da die App ad-hoc signiert ist, kann macOS sie nach einem Update erneut danach fragen.
+For the Trash, Mail downloads and protected folders, Cleaner needs *Full Disk Access* under System Settings → Privacy & Security. Because the app is ad-hoc signed, macOS may ask again after an update.
 
-## Selbst bauen
+## Build from source
 
-Nötig sind nur die Xcode Command Line Tools (kein Xcode):
+You only need the Xcode Command Line Tools (no Xcode):
 
 ```bash
-./make-app.sh all     # oder: arm64 | x86_64
+./make-app.sh all     # or: arm64 | x86_64
 ```
 
-Das erzeugt `dist/Cleaner-AppleSilicon.dmg` und `dist/Cleaner-Intel.dmg` (macOS 13+). Für eine echte Signatur: `CODESIGN_ID="Developer ID Application: …" ./make-app.sh all` und das DMG mit `notarytool` notarisieren.
+This builds `dist/Cleaner-AppleSilicon.dmg` and `dist/Cleaner-Intel.dmg` (macOS 13+). For a proper signature use `CODESIGN_ID="Developer ID Application: …" ./make-app.sh all` and notarize the DMG with `notarytool`. For development, `swift run` starts the app without a bundle (no self-update).
 
-Zum Entwickeln: `swift run` (ohne App-Bundle, daher ohne Updater-Installation).
+## Releasing
 
-> Hinweis: `@State` wird bewusst nicht verwendet (das Makro braucht Xcode-Plugins); Zustand liegt in kleinen `ObservableObject`s.
+1. Bump `VERSION` and commit.
+2. `git tag v0.1.1 && git push --tags` – `.github/workflows/release.yml` builds both DMGs and attaches them to the release.
 
-## Release veröffentlichen
+## Contributing
 
-1. `VERSION` erhöhen und committen.
-2. `git tag v0.1.0 && git push --tags` – der Workflow `.github/workflows/release.yml` baut beide DMGs und hängt sie ans Release.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Security issues: [SECURITY.md](SECURITY.md).
 
-## Lizenz
+## License
 
-MIT, siehe [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
