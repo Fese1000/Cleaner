@@ -34,7 +34,10 @@ final class AppState: ObservableObject {
     private var scanTask: Task<Void, Never>?
     private var toastTask: Task<Void, Never>?
 
-    init() { refreshDisk() }
+    init() {
+        refreshDisk()
+        if let n = ProcessInfo.processInfo.environment["CLEANER_SECTION"], let sec = Section(rawValue: n) { section = sec }
+    }
 
     // MARK: Scan
 
@@ -103,7 +106,7 @@ final class AppState: ObservableObject {
         case .trash: n = trash.count
         default: n = 0
         }
-        return n > 0 ? "\(n)" : nil
+        return n > 0 ? n.formatted() : nil
     }
 
     // MARK: Auswahl

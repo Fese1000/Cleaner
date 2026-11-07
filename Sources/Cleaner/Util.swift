@@ -13,7 +13,7 @@ private let byteFormatter: ByteCountFormatter = {
     return f
 }()
 
-func formatBytes(_ b: Int64) -> String { byteFormatter.string(fromByteCount: b) }
+func formatBytes(_ b: Int64) -> String { b <= 0 ? "0 KB" : byteFormatter.string(fromByteCount: b) }
 
 final class CancelToken: @unchecked Sendable {
     private let lock = NSLock()

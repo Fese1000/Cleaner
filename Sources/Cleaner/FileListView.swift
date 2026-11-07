@@ -53,7 +53,7 @@ struct FileListView: View {
             headerRow(list)
             Line()
             if visible.isEmpty {
-                Text(emptyText).foregroundColor(pal.mut).frame(maxWidth: .infinity, maxHeight: .infinity)
+                Text(state.scanning ? T("Scan läuft …", "Scanning …") : emptyText).foregroundColor(pal.mut).frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     LazyVStack(spacing: 0) {
@@ -97,11 +97,11 @@ struct FileListView: View {
 
     private func headerRow(_ list: [FileEntry]) -> some View {
         HStack(spacing: 0) {
-            Color.clear.frame(width: selectable ? 54 : 32)
+            Color.clear.frame(width: selectable ? 54 : 32, height: 1)
             sortButton(T("Name", "Name"), .name).frame(maxWidth: .infinity, alignment: .leading)
             sortButton(T("Größe", "Size"), .size).frame(width: 90, alignment: .trailing)
             sortButton(dateTitle, .date).frame(width: 150, alignment: .trailing)
-            Color.clear.frame(width: rowButtonTitle == nil ? 64 : 150)
+            Color.clear.frame(width: rowButtonTitle == nil ? 64 : 150, height: 1)
         }
         .font(.system(size: 12, weight: .semibold)).foregroundColor(pal.mut).padding(.vertical, 6)
     }

@@ -21,13 +21,15 @@ struct ScanResult: Sendable {
 }
 
 enum FileScanner {
-    static let docExts: Set<String> = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "pages", "numbers", "key", "txt", "rtf", "rtfd", "odt", "ods", "odp", "csv", "md", "epub", "tex", "pub"]
+    static let docExts: Set<String> = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "pages", "numbers", "key", "rtf", "rtfd", "odt", "ods", "odp", "epub", "pub"]
+    /// Software-Ordner: werden als ein Block behandelt, ihr Inhalt erscheint nicht als Dokumente oder Duplikate.
+    static let blobNames: Set<String> = ["node_modules", "miniconda3", "anaconda3", "miniforge3", "mambaforge", "micromamba", "venv", "site-packages", "Pods", "bower_components", "vendor"]
 
     static func run(_ cfg: ScanConfig, progress: @escaping @Sendable (Int, String) -> Void) -> ScanResult {
         var res = ScanResult()
         let fm = FileManager.default
         let cutoff = Date().addingTimeInterval(-Double(cfg.staleDays) * 86400)
-        let keys: [URLResourceKey] = [.isDirectoryKey, .isPackageKey, .isSymbolicLinkKey, .totalFileAllocatedSizeKey, .fileSizeKey, .contentModificationDateKey, .contentAccessDateKey]
+        let keys: [URLResourceKey] = [.isDirectoryKey, .isPackageKey, .isSymbolicLinkKey, .totalFileAllocatedSizeKey, .fileSizeKey, .contentModificationDateKey]
         let keySet = Set(keys)
         var buckets: [Int64: [FileEntry]] = [:]
         var staleCandidates: [FileEntry] = []
@@ -45,6 +47,16 @@ enum FileScanner {
 
         for root in roots {
             if Task.isCancelled { break }
+            if blobNames.contains(root.lastPathComponent) {
+                // Software-Ordner als Stamm (z. B. ~/miniconda3): als ein Block zählen, nicht durchsuchen.
+                if cfg.ignored.contains(root.path) { continue }
+                let size = FS.dirSize(root)
+                res.bytes += size
+                if size >= cfg.largeBytes {
+                    res.large.append(FileEntry(url: root, size: size, date: FS.modified(root), isDir: true, tag: nil))
+                }
+                continue
+            }
             guard let en = fm.enumerator(at: root, includingPropertiesForKeys: keys, options: [.skipsHiddenFiles], errorHandler: { _, _ in errors += 1; return true }) else { continue }
             while let u = en.nextObject() as? URL {
                 if Task.isCancelled { break }
@@ -52,14 +64,14 @@ enum FileScanner {
                 guard let rv = try? u.resourceValues(forKeys: keySet) else { continue }
                 if rv.isSymbolicLink == true { continue }
                 let isDir = rv.isDirectory == true
-                let blob = rv.isPackage == true || u.lastPathComponent == "node_modules"
+                let blob = rv.isPackage == true || blobNames.contains(u.lastPathComponent)
                 if isDir && !blob { continue }
                 let size: Int64
                 if isDir { en.skipDescendants(); size = FS.dirSize(u) } else { size = FS.fileSize(rv) }
                 count += 1
                 res.bytes += size
                 if count % 300 == 0 { progress(count, u.path) }
-                let touched = max(rv.contentModificationDate ?? .distantPast, rv.contentAccessDate ?? .distantPast)
+                let touched = rv.contentModificationDate ?? .distantPast
                 let e = FileEntry(url: u, size: size, date: touched, isDir: isDir, tag: nil)
                 if size >= cfg.largeBytes { res.large.append(e) }
                 if u.path.hasPrefix(dl) { res.downloads.append(e) }
@@ -93,6 +105,14 @@ enum FileScanner {
             i += 1
             progress(i, T("Duplikate vergleichen \(i)/\(candidates.count)", "Comparing duplicates \(i)/\(candidates.count)"))
             var byPartial: [String: [FileEntry]] = [:]
+            // Hardlinks (gleicher Inode) sind keine echten Kopien und sparen beim Löschen nichts.
+            var seen = Set<String>()
+            let bucket = bucket.filter { e in
+                var st = stat()
+                guard lstat(e.url.path, &st) == 0 else { return true }
+                return seen.insert("\(st.st_dev):\(st.st_ino)").inserted
+            }
+            if bucket.count < 2 { continue }
             for e in bucket { if let h = hash(e.url, limit: 65536) { byPartial[h, default: []].append(e) } }
             for b2 in byPartial.values where b2.count > 1 {
                 var byFull: [String: [FileEntry]] = [:]

@@ -33,7 +33,7 @@ final class Settings: ObservableObject {
         themeID = d.string(forKey: "theme") ?? "auto"
         staleDays = d.object(forKey: "staleDays") as? Int ?? 365
         largeMB = d.object(forKey: "largeMB") as? Int ?? 100
-        dupMinMB = d.object(forKey: "dupMinMB") as? Int ?? 1
+        dupMinMB = d.object(forKey: "dupMinMB") as? Int ?? 5
         roots = d.stringArray(forKey: "roots") ?? Settings.defaultRoots()
         ignored = d.stringArray(forKey: "ignored") ?? []
         deleteMode = DeleteMode(rawValue: d.string(forKey: "deleteMode") ?? "trash") ?? .trash

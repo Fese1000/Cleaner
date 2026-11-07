@@ -29,7 +29,7 @@ struct StaleView: View {
     @EnvironmentObject var settings: Settings
     var body: some View {
         Page(title: Section.stale.title, lead: T("Dokumente, die seit über \(settings.staleDays) Tagen weder geöffnet noch geändert wurden.", "Documents neither opened nor modified for over \(settings.staleDays) days.")) {
-            FileListView(entries: state.stale, emptyText: T("Keine veralteten Dokumente gefunden.", "No outdated documents found."), showTagFilter: false)
+            FileListView(entries: state.stale, emptyText: T("Keine veralteten Dokumente gefunden.", "No outdated documents found."), dateTitle: T("Zuletzt benutzt", "Last used"), showTagFilter: false)
         }
     }
 }
@@ -38,7 +38,7 @@ struct DownloadsView: View {
     @EnvironmentObject var state: AppState
     var body: some View {
         Page(title: Section.downloads.title, lead: T("Alles in deinem Downloads-Ordner – meist voller Installer und Altlasten.", "Everything in your Downloads folder – usually full of installers and leftovers.")) {
-            FileListView(entries: state.downloads, dateTitle: T("Zuletzt benutzt", "Last used"), showTagFilter: false)
+            FileListView(entries: state.downloads, dateTitle: T("Zuletzt geändert", "Last modified"), showTagFilter: false)
         }
     }
 }
