@@ -1,0 +1,19 @@
+# Build
+.build/
+build/
+dist/
+Cleaner.app/
+*.dmg
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editoren
+.idea/
+.vscode/
+.swiftpm/
+xcuserdata/
+.claude/

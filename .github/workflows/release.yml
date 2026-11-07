@@ -1,0 +1,19 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version prüfen
+        run: test "v$(tr -d '[:space:]' < VERSION)" = "${GITHUB_REF_NAME}"
+      - name: Bauen
+        run: ./make-app.sh all
+      - name: Release erstellen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/Cleaner-AppleSilicon.dmg dist/Cleaner-Intel.dmg --generate-notes
